@@ -1,8 +1,10 @@
-name: Build Windows EXE
+name: Build and Release Scheduler
 
 on:
   push:
-    branches: [ "main" ]
+    tags:
+      - "v*"
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -15,19 +17,70 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Build EXE
+      - name: Build Windows EXE
         run: |
           pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py
 
-      - name: Upload artifact
+      - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: scheduler-exe
+          name: scheduler-windows
           path: dist/app.exe
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build macOS app
+        run: |
+          pyinstaller --onefile app.py
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheduler-macos
+          path: dist/app
+
+  release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: scheduler-windows
+          path: release
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: scheduler-macos
+          path: release
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
