@@ -8,6 +8,11 @@
 
 <div class="container">
     <h1>Generator Jadwal Kuliah</h1>
+        {% if error %}
+    <div class="card" style="background:#ffe5e5;color:#900;">
+        <strong>Error:</strong> {{ error }}
+    </div>
+    {% endif %}
 
     <form method="post" class="card">
         <div class="form-grid">
@@ -16,26 +21,26 @@
                 <h3>Konfigurasi Umum</h3>
 
                 <label>Jumlah hari</label>
-                <input type="number" name="days" value="5">
+                <input type="number" name="days" value="{{ form_data.days }}">
 
                 <label>Jumlah ruangan</label>
-                <input type="number" name="num_rooms" value="16">
+                <input type="number" name="num_rooms" value="{{ form_data.num_rooms }}">
 
                 <label>Jumlah kelas per semester</label>
-                <input type="number" name="num_classes" value="12">
+                <input type="number" name="num_classes" value="{{ form_data.num_classes }}"
 
                 <label>Kelas pagi</label>
-                <input type="text" name="kelas_pagi" value="3,4,7,8,11,12">
+                <input type="text" name="kelas_pagi" value="{{ form_data.kelas_pagi }}">
 
                 <label>Kelas siang</label>
-                <input type="text" name="kelas_siang" value="1,2,5,6,9,10">
+                <input type="text" name="kelas_siang" value="{{ form_data.kelas_siang }}">
             </div>
 
             <div class="section">
                 <h3>Sesi</h3>
 
                 <label>Jumlah sesi</label>
-                <input type="number" name="num_sessions" value="4">
+                <input type="number" name="num_sessions" value="{{ form_data.num_sessions }}">
 
                 <label>Sesi 1</label>
                 <select name="sesi_1_type">
@@ -66,19 +71,29 @@
                 <h3>MK Wajib</h3>
 
                 <label>Distribusi MK per semester</label>
-                <input type="text" name="distribusi" value="8,7,7">
+                <input type="text" name="distribusi" value="{{ form_data.distribusi }}">
             </div>
 
             <div class="section">
                 <h3>MK Pilihan</h3>
 
                 <label>Jumlah MK pilihan</label>
-                <input type="number" name="num_pilihan" value="10">
+                <input type="number" name="num_pilihan" value="{{ form_data.num_pilihan }}">
 
                 <label>Frekuensi per minggu</label>
-                <input type="number" name="freq_pilihan" value="2">
+                <input type="number" name="freq_pilihan" value="{{ form_data.freq_pilihan }}">
             </div>
 
+        </div>
+
+        <div class="section">
+            <h3>Mode Generate</h3>
+
+            <label>Mode penjadwalan</label>
+            <select name="mode">
+                <option value="stable">Stabil (hasil tetap)</option>
+                <option value="random">Acak (hasil berbeda setiap generate)</option>
+            </select>
         </div>
 
         <button type="submit">Generate Jadwal</button>
@@ -105,6 +120,24 @@
                 {% endfor %}
             </table>
         </div>
+    </div>
+    {% endif %}
+
+    {% if freq %}
+    <div class="card">
+        <h3>Frekuensi Mata Kuliah</h3>
+        <table>
+            <tr>
+                <th>Mata Kuliah</th>
+                <th>Jumlah Kelas</th>
+            </tr>
+            {% for mk, jumlah in freq.items() %}
+            <tr>
+                <td>{{ mk }}</td>
+                <td>{{ jumlah }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
     {% endif %}
 </div>
