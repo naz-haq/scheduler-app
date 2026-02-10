@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generator Jadwal</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Generator Jadwal Kuliah</h1>
+
+    <form method="post" class="card">
+        <div class="form-grid">
+
+            <div class="section">
+                <h3>Konfigurasi Umum</h3>
+
+                <label>Jumlah hari</label>
+                <input type="number" name="days" value="5">
+
+                <label>Jumlah ruangan</label>
+                <input type="number" name="num_rooms" value="16">
+
+                <label>Jumlah kelas per semester</label>
+                <input type="number" name="num_classes" value="12">
+
+                <label>Kelas pagi</label>
+                <input type="text" name="kelas_pagi" value="3,4,7,8,11,12">
+
+                <label>Kelas siang</label>
+                <input type="text" name="kelas_siang" value="1,2,5,6,9,10">
+            </div>
+
+            <div class="section">
+                <h3>Sesi</h3>
+
+                <label>Jumlah sesi</label>
+                <input type="number" name="num_sessions" value="4">
+
+                <label>Sesi 1</label>
+                <select name="sesi_1_type">
+                    <option value="pagi">Pagi</option>
+                    <option value="siang">Siang</option>
+                </select>
+
+                <label>Sesi 2</label>
+                <select name="sesi_2_type">
+                    <option value="pagi">Pagi</option>
+                    <option value="siang">Siang</option>
+                </select>
+
+                <label>Sesi 3</label>
+                <select name="sesi_3_type">
+                    <option value="siang">Siang</option>
+                    <option value="pagi">Pagi</option>
+                </select>
+
+                <label>Sesi 4</label>
+                <select name="sesi_4_type">
+                    <option value="siang">Siang</option>
+                    <option value="pagi">Pagi</option>
+                </select>
+            </div>
+
+            <div class="section">
+                <h3>MK Wajib</h3>
+
+                <label>Distribusi MK per semester</label>
+                <input type="text" name="distribusi" value="8,7,7">
+            </div>
+
+            <div class="section">
+                <h3>MK Pilihan</h3>
+
+                <label>Jumlah MK pilihan</label>
+                <input type="number" name="num_pilihan" value="10">
+
+                <label>Frekuensi per minggu</label>
+                <input type="number" name="freq_pilihan" value="2">
+            </div>
+
+        </div>
+
+        <button type="submit">Generate Jadwal</button>
+    </form>
+
+    {% if schedule %}
+    <div class="card">
+        <h2>Hasil Jadwal</h2>
+        <a class="export" href="/export">Export ke Excel</a>
+
+        <div class="table-container">
+            <table>
+                <tr>
+                    {% for col in schedule[0].keys() %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+                {% for row in schedule %}
+                <tr>
+                    {% for val in row.values() %}
+                    <td>{{ val }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+</body>
+</html>
