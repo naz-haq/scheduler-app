@@ -3,10 +3,10 @@
 
 a = Analysis(
     ['app.py'],
-    pathex=[],
+    pathex=['.'],
     binaries=[],
-    datas=[('templates', 'templates'), ('static', 'static')],
-    hiddenimports=['openpyxl'],
+    datas=[('templates', 'templates'), ('static', 'static'), ('scheduler.py', '.')],
+    hiddenimports=['openpyxl', 'scheduler'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
