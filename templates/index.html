@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Generator Jadwal Kuliah</title>
+    <style>
+        :root {
+            --bg: #0f172a; --card: #ffffff; --line: #e2e8f0; --ink: #1e293b;
+            --muted: #64748b; --brand: #4f46e5; --brand-2: #6366f1;
+            --ok: #16a34a; --err: #dc2626; --soft: #f1f5f9;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--ink); background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            min-height: 100vh; padding: 32px 16px;
+        }
+        .wrap { max-width: 1100px; margin: 0 auto; }
+        header h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: -.02em; }
+        header p { margin: 0 0 24px; color: var(--muted); }
+        .card {
+            background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+            padding: 24px; box-shadow: 0 10px 30px rgba(2,6,23,.06); margin-bottom: 24px;
+        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; }
+        .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--ink); }
+        .field input {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+            font-size: 14px; transition: border-color .15s, box-shadow .15s; background: #fff;
+        }
+        .field input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(79,70,229,.15); }
+        .actions { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+        button {
+            background: var(--brand); color: #fff; border: 0; padding: 12px 22px;
+            border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s;
+        }
+        button:hover { background: var(--brand-2); }
+        .btn-ghost {
+            display: inline-flex; align-items: center; background: var(--soft); color: var(--ink);
+            text-decoration: none; padding: 12px 22px; border-radius: 10px; font-weight: 600;
+        }
+        .btn-ghost:hover { background: #e2e8f0; }
+        .alert { background: #fef2f2; color: var(--err); border: 1px solid #fecaca; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-weight: 600; }
+        h2 { font-size: 18px; margin: 0 0 12px; }
+        .table-scroll { overflow: auto; border: 1px solid var(--line); border-radius: 12px; max-height: 460px; }
+        table { border-collapse: collapse; width: 100%; font-size: 13px; }
+        th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); white-space: nowrap; text-align: center; }
+        thead th { position: sticky; top: 0; background: var(--brand); color: #fff; }
+        tbody tr:nth-child(even) { background: #f8fafc; }
+        td:empty, td { color: var(--ink); }
+        td.dash { color: #cbd5e1; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <h1>Generator Jadwal Kuliah & Praktikum</h1>
+    </header>
+
+    {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+    <form method="post" class="card">
+        <div class="grid">
+            <div class="field"><label>Jumlah Ruangan</label><input type="number" name="num_rooms" min="1" value="{{ request.form.num_rooms or 15 }}"></div>
+            <div class="field"><label>MK wajib per angkatan (8,7,7)</label><input type="text" name="distribusi" value="{{ request.form.distribusi or '8,7,7' }}"></div>
+            <div class="field"><label>Kelas per MK wajib</label><input type="number" name="kelas_mkw" min="1" value="{{ request.form.kelas_mkw or 12 }}"></div>
+            <div class="field"><label>Jumlah MK pilihan</label><input type="number" name="num_pilihan" min="0" value="{{ request.form.num_pilihan or 10 }}"></div>
+            <div class="field"><label>Kelas per MK pilihan</label><input type="number" name="kelas_mkp" min="1" value="{{ request.form.kelas_mkp or 2 }}"></div>
+            <div class="field"><label>Kapasitas tiap lab (3,2,2,1)</label><input type="text" name="lab_kapasitas" value="{{ request.form.lab_kapasitas or '3,2,2,1' }}"></div>
+            <div class="field"><label>MK praktikum per angkatan (5,4,3)</label><input type="text" name="distribusi_prak" value="{{ request.form.distribusi_prak or '5,4,3' }}"></div>
+        </div>
+        <div class="actions">
+            <button type="submit">Generate Jadwal</button>
+            {% if schedule %}<a class="btn-ghost" href="/export">⬇ Export ke Excel</a>{% endif %}
+        </div>
+    </form>
+
+    {% if schedule %}
+    <div class="card">
+        <h2>Jadwal Kuliah</h2>
+        <div class="table-scroll">
+            <table>
+                <thead><tr>{% for col in schedule[0].keys() %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+                <tbody>
+                {% for row in schedule %}<tr>{% for val in row.values() %}<td class="{{ 'dash' if val == '-' }}">{{ val }}</td>{% endfor %}</tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if praktikum %}
+    <div class="card">
+        <h2>Jadwal Praktikum</h2>
+        <div class="table-scroll">
+            <table>
+                <thead><tr>{% for col in praktikum[0].keys() %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+                <tbody>
+                {% for row in praktikum %}<tr>{% for val in row.values() %}<td class="{{ 'dash' if val == '-' }}">{{ val }}</td>{% endfor %}</tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
