@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2>Dashboard</h2>
+<div class="card">
+    <div class="stat">Angkatan <b>{{ stats.angkatan }}</b></div>
+    <div class="stat">Ruang <b>{{ stats.ruang }}</b></div>
+    <div class="stat">Dosen <b>{{ stats.dosen }}</b></div>
+    <div class="stat">Mata Kuliah <b>{{ stats.matakuliah }}</b></div>
+</div>
+<div class="card">
+    <p>Lengkapi <b>Master Data</b> dahulu (Angkatan, Ruang, Dosen, Mata Kuliah), lalu buka <a href="/generate">Generate Jadwal</a>.</p>
+</div>
+{% endblock %}

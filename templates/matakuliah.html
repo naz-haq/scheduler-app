@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Mata Kuliah{% endblock %}
+{% block content %}
+<h2>Mata Kuliah</h2>
+<div class="card">
+    <form method="post" action="/matakuliah/simpan" class="grid">
+        <div class="field"><label>Kode</label><input name="kode" required></div>
+        <div class="field"><label>Nama</label><input name="nama" required></div>
+        <div class="field"><label>SKS</label><input type="number" name="sks" value="2" min="1"></div>
+        <div class="field"><label>Jenis</label><select name="jenis"><option value="wajib">Wajib</option><option value="pilihan">Pilihan</option><option value="praktikum">Praktikum</option></select></div>
+        <div class="field"><label>Angkatan</label><select name="angkatan_id"><option value="">-</option>{% for a in angkatan %}<option value="{{ a.id }}">{{ a.tahun }}</option>{% endfor %}</select></div>
+        <div class="field"><label>Dosen</label><select name="dosen_id"><option value="">-</option>{% for d in dosen %}<option value="{{ d.id }}">{{ d.nama }}</option>{% endfor %}</select></div>
+        <div class="field"><label>Lab (khusus praktikum)</label><select name="lab"><option value="">-</option>{% for l in lab_names %}<option value="{{ l }}">{{ l }}</option>{% endfor %}</select><span class="hint">isi nama lab untuk MK praktikum</span></div>
+        <div class="field" style="align-self:end"><button>Tambah</button></div>
+    </form>
+    <hr class="sep">
+    <form method="post" action="/matakuliah/import" enctype="multipart/form-data" class="import-row">
+        <input type="file" name="file" accept=".xlsx,.csv" required>
+        <button>Import Excel/CSV</button>
+        <span class="muted" style="font-size:12px">Kolom: kode, nama, sks, jenis, angkatan, dosen, lab</span>
+    </form>
+</div>
+<div class="card">
+    <table>
+        <thead><tr><th>Kode</th><th>Nama</th><th>SKS</th><th>Jenis</th><th>Angkatan</th><th>Dosen</th><th>Lab</th><th></th></tr></thead>
+        <tbody>
+        {% for r in rows %}<tr><td>{{ r.kode }}</td><td>{{ r.nama }}</td><td>{{ r.sks }}</td><td>{{ r.jenis }}</td><td>{{ r.tahun or '-' }}</td><td>{{ r.dosen or '-' }}</td><td>{{ r.lab or '-' }}</td><td><a class="del" href="/matakuliah/hapus/{{ r.id }}">Hapus</a></td></tr>{% endfor %}
+        {% if not rows %}<tr><td colspan="8">Belum ada data.</td></tr>{% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

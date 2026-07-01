@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Jadwal dari Data{% endblock %}
+{% block content %}
+<style>
+    /* Khusus sel editable jadwal */
+    .table-scroll td { border-bottom:1px solid var(--line); padding:0; }
+    .table-scroll td.meta { background:#f1f5f9; font-weight:600; text-align:center; font-size:12px; padding:6px 10px; white-space:nowrap; }
+    .table-scroll input.cell { border:0; width:150px; padding:6px 8px; font-size:12px; background:transparent; text-align:center; }
+    .table-scroll input.cell:focus { outline:2px solid var(--brand); background:#eef2ff; }
+    .table-scroll input.filled { background:#f8fafc; }
+</style>
+<h2>Jadwal dari Master Data</h2>
+{% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+<div class="card">
+    <p style="margin:0 0 14px;color:var(--muted)">Generate otomatis dari master data, lalu edit langsung di sel. Klik <strong>Simpan &amp; Cek Bentrok</strong> untuk validasi.</p>
+    <div class="toolbar">
+        <form method="post" action="/jadwal" style="margin:0">
+            <button type="submit">↻ Generate Ulang dari Data</button>
+        </form>
+        {% if schedule %}<a class="btn-ghost" href="/export">⬇ Export Excel</a>
+        <a class="btn-ghost" href="/export/pdf">⬇ Export PDF</a>{% endif %}
+    </div>
+</div>
+
+{% if schedule or praktikum %}
+<div class="card">
+    {% if conflicts %}
+    <div class="panel-bad">
+        ⚠ Ditemukan {{ conflicts|length }} bentrok:
+        <ul>{% for c in conflicts %}<li>{{ c }}</li>{% endfor %}</ul>
+    </div>
+    {% else %}
+    <div class="panel-ok">✓ Tidak ada bentrok terdeteksi.</div>
+    {% endif %}
+</div>
+
+<form method="post" action="/jadwal/simpan">
+    {% if schedule %}
+    <div class="card"><h2>Jadwal Kuliah</h2><div class="table-scroll"><table>
+        <thead><tr>{% for col in schedule[0].keys() %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for row in schedule %}<tr>
+            {% for col, val in row.items() %}
+                {% if col in ("Hari", "Sesi") %}
+                    <td class="meta">{{ val }}</td>
+                {% else %}
+                    <td><input class="cell {{ 'filled' if val != '-' }}" name="k|{{ loop.index0 }}|{{ col }}" value="{{ val }}"></td>
+                {% endif %}
+            {% endfor %}
+        </tr>{% endfor %}
+        </tbody>
+    </table></div></div>
+    {% endif %}
+
+    {% if praktikum %}
+    <div class="card"><h2>Jadwal Praktikum</h2><div class="table-scroll"><table>
+        <thead><tr>{% for col in praktikum[0].keys() %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for row in praktikum %}<tr>
+            {% for col, val in row.items() %}
+                {% if col in ("Hari", "Blok") %}
+                    <td class="meta">{{ val }}</td>
+                {% else %}
+                    <td><input class="cell {{ 'filled' if val != '-' }}" name="p|{{ loop.index0 }}|{{ col }}" value="{{ val }}"></td>
+                {% endif %}
+            {% endfor %}
+        </tr>{% endfor %}
+        </tbody>
+    </table></div></div>
+    {% endif %}
+
+    <div class="card toolbar">
+        <button type="submit">💾 Simpan &amp; Cek Bentrok</button>
+        <span style="color:var(--muted);font-size:13px">Format sel: <code>MK (Kelas) · Dosen</code></span>
+    </div>
+</form>
+{% endif %}
+{% endblock %}

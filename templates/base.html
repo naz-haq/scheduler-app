@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Jadwal Farmasi{% endblock %}</title>
+    <style>
+        :root { --brand:#4f46e5; --brand2:#6366f1; --line:#e2e8f0; --ink:#1e293b; --muted:#64748b; --soft:#f1f5f9; --err:#dc2626; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:var(--ink); background:#f8fafc; }
+        .layout { display:flex; min-height:100vh; }
+        nav { width:220px; background:#0f172a; color:#cbd5e1; padding:20px 0; flex-shrink:0; }
+        nav h1 { color:#fff; font-size:16px; margin:0 20px 20px; }
+        nav a { display:block; padding:11px 20px; color:#cbd5e1; text-decoration:none; font-size:14px; }
+        nav a:hover, nav a.active { background:#1e293b; color:#fff; border-left:3px solid var(--brand2); }
+        main { flex:1; padding:28px 32px; width:100%; min-width:0; }
+        h2 { margin:0 0 18px; font-size:22px; }
+        .muted { color:var(--muted); }
+
+        /* Kartu & form */
+        .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:22px; box-shadow:0 6px 20px rgba(2,6,23,.05); margin-bottom:20px; }
+        .form-narrow { max-width:100%; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:16px; align-items:start; }
+        .field { display:flex; flex-direction:column; }
+        label { display:block; font-size:12px; font-weight:600; margin-bottom:5px; }
+        input,select { width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:9px; font-size:14px; background:#fff; }
+        input:focus,select:focus { outline:2px solid var(--brand); outline-offset:0; border-color:var(--brand); }
+        button { background:var(--brand); color:#fff; border:0; padding:10px 18px; border-radius:9px; font-weight:600; cursor:pointer; }
+        button:hover { background:var(--brand2); }
+
+        /* Seksi & utilitas form */
+        .sec { font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); font-weight:700; margin:4px 0 14px; padding-bottom:8px; border-bottom:1px solid var(--line); }
+        .sec:not(:first-child) { margin-top:24px; }
+        .hint { display:block; font-size:11px; color:var(--muted); margin-top:5px; }
+        .sep { border:none; border-top:1px solid var(--line); margin:18px 0; }
+        .actions { margin-top:18px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+        .toolbar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+        .import-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+        .btn-ghost { background:var(--soft); color:var(--ink); text-decoration:none; padding:10px 18px; border-radius:9px; font-weight:600; cursor:pointer; display:inline-block; }
+        .btn-ghost:hover { background:#e2e8f0; }
+
+        /* Tabel data */
+        table { width:100%; border-collapse:collapse; font-size:13px; }
+        th,td { padding:9px 11px; border-bottom:1px solid var(--line); text-align:left; }
+        thead th { background:var(--soft); }
+        .del { color:var(--err); text-decoration:none; font-weight:600; }
+        .del:hover { text-decoration:underline; }
+
+        /* Tabel jadwal (scroll + header sticky) */
+        .table-scroll { overflow:auto; border:1px solid var(--line); border-radius:12px; max-height:480px; }
+        .table-scroll table { border-collapse:collapse; width:100%; }
+        .table-scroll th { position:sticky; top:0; background:var(--brand); color:#fff; padding:8px 10px; font-size:12px; z-index:1; }
+        .table-scroll td { text-align:center; white-space:nowrap; border-right:1px solid var(--line); font-size:12px; }
+        .table-scroll tr:nth-child(even) td { background:#f8fafc; }
+        td.dash { color:#cbd5e1; }
+
+        /* Notifikasi & panel */
+        .flash { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; padding:10px 14px; border-radius:9px; margin-bottom:14px; }
+        .alert { background:#fef2f2; color:var(--err); border:1px solid #fecaca; padding:12px 16px; border-radius:10px; margin-bottom:16px; font-weight:600; }
+        .panel-ok { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; padding:12px 16px; border-radius:10px; font-weight:600; }
+        .panel-bad { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; padding:14px 16px; border-radius:10px; }
+        .panel-bad ul { margin:8px 0 0; padding-left:20px; }
+        .panel-bad li { margin:3px 0; font-size:13px; }
+
+        /* Dashboard */
+        .stat { display:inline-block; min-width:140px; }
+        .stat b { font-size:28px; display:block; }
+
+        /* ---------- Responsif: tablet & handphone ---------- */
+        @media (max-width: 860px) {
+            .layout { flex-direction:column; }
+            nav { width:100%; padding:12px 14px; display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+            nav h1 { width:100%; margin:0 4px 8px; }
+            nav a { padding:8px 14px; font-size:13px; border-radius:999px; background:#1e293b; }
+            nav a:hover, nav a.active { border-left:0; background:var(--brand); color:#fff; }
+            main { padding:18px 16px; }
+        }
+        @media (max-width: 600px) {
+            h2 { font-size:19px; }
+            .card { padding:16px; }
+            .grid { grid-template-columns:1fr; gap:12px; }
+            .actions button, .actions .btn-ghost,
+            .toolbar button, .toolbar .btn-ghost { width:100%; text-align:center; }
+            .import-row { flex-direction:column; align-items:stretch; }
+            .import-row button { width:100%; }
+            /* tabel data bisa digeser horizontal */
+            .card > table { display:block; overflow-x:auto; white-space:nowrap; }
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <nav>
+        <h1>Jadwal Farmasi</h1>
+        <a href="/" class="{{ 'active' if request.path == '/' }}">Dashboard</a>
+        <a href="/angkatan" class="{{ 'active' if request.path.startswith('/angkatan') }}">Angkatan</a>
+        <a href="/ruang" class="{{ 'active' if request.path.startswith('/ruang') }}">Ruang</a>
+        <a href="/dosen" class="{{ 'active' if request.path.startswith('/dosen') }}">Dosen</a>
+        <a href="/matakuliah" class="{{ 'active' if request.path.startswith('/matakuliah') }}">Mata Kuliah</a>
+        <a href="/jadwal" class="{{ 'active' if request.path.startswith('/jadwal') }}">Jadwal (dari Data)</a>
+        <a href="/generate" class="{{ 'active' if request.path.startswith('/generate') }}">Generate Manual</a>
+    </nav>
+    <main>
+        {% with msgs = get_flashed_messages() %}{% for m in msgs %}<div class="flash">{{ m }}</div>{% endfor %}{% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</div>
+</body>
+</html>

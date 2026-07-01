@@ -31,11 +31,14 @@ jobs:
       - name: Build Windows EXE
         run: pyinstaller --noconfirm --clean app.spec
 
+      - name: Package Windows (zip folder onedir)
+        run: Compress-Archive -Path dist/app/* -DestinationPath scheduler-windows.zip
+
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-windows
-          path: dist/app.exe
+          path: scheduler-windows.zip
 
   build-macos:
     runs-on: macos-latest
@@ -57,11 +60,16 @@ jobs:
       - name: Build macOS app
         run: pyinstaller --noconfirm --clean app.spec
 
+      - name: Package macOS (.app bundle)
+        run: |
+          cd dist
+          zip -r -y ../scheduler-macos.zip "Jadwal Farmasi.app"
+
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-macos
-          path: dist/app
+          path: scheduler-macos.zip
 
   release:
     needs: [build-windows, build-macos]

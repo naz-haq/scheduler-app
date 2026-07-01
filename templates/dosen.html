@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Dosen{% endblock %}
+{% block content %}
+<h2>Dosen</h2>
+<div class="card">
+    <form method="post" action="/dosen/simpan" class="grid">
+        <div class="field"><label>Nama</label><input name="nama" required></div>
+        <div class="field"><label>NIDN</label><input name="nidn"></div>
+        <div class="field"><label>Tidak tersedia (mis. Jumat pagi)</label><input name="tidak_tersedia"></div>
+        <div class="field" style="align-self:end"><button>Tambah</button></div>
+    </form>
+    <hr class="sep">
+    <form method="post" action="/dosen/import" enctype="multipart/form-data" class="import-row">
+        <input type="file" name="file" accept=".xlsx,.csv" required>
+        <button>Import Excel/CSV</button>
+        <span class="muted" style="font-size:12px">Kolom: nama, nidn, tidak_tersedia</span>
+    </form>
+</div>
+<div class="card">
+    <table>
+        <thead><tr><th>Nama</th><th>NIDN</th><th>Tidak tersedia</th><th></th></tr></thead>
+        <tbody>
+        {% for r in rows %}<tr><td>{{ r.nama }}</td><td>{{ r.nidn }}</td><td>{{ r.tidak_tersedia }}</td><td><a class="del" href="/dosen/hapus/{{ r.id }}">Hapus</a></td></tr>{% endfor %}
+        {% if not rows %}<tr><td colspan="4">Belum ada data.</td></tr>{% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

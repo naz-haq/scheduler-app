@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Ruang{% endblock %}
+{% block content %}
+<h2>Ruang & Lab</h2>
+<div class="card">
+    <form method="post" action="/ruang/simpan" class="grid">
+        <div class="field"><label>Kode</label><input name="kode" placeholder="R1" required></div>
+        <div class="field"><label>Nama</label><input name="nama" placeholder="Ruang 1"></div>
+        <div class="field"><label>Kapasitas</label><input type="number" name="kapasitas" value="40" min="0"></div>
+        <div class="field"><label>Tipe</label><select name="tipe"><option value="kuliah">Kuliah</option><option value="lab">Lab</option></select></div>
+        <div class="field" style="align-self:end"><button>Tambah</button></div>
+    </form>
+    <hr class="sep">
+    <form method="post" action="/ruang/import" enctype="multipart/form-data" class="import-row">
+        <input type="file" name="file" accept=".xlsx,.csv" required>
+        <button>Import Excel/CSV</button>
+        <span class="muted" style="font-size:12px">Kolom: kode, nama, kapasitas, tipe</span>
+    </form>
+</div>
+<div class="card">
+    <table>
+        <thead><tr><th>Kode</th><th>Nama</th><th>Kapasitas</th><th>Tipe</th><th></th></tr></thead>
+        <tbody>
+        {% for r in rows %}<tr><td>{{ r.kode }}</td><td>{{ r.nama }}</td><td>{{ r.kapasitas }}</td><td>{{ r.tipe }}</td><td><a class="del" href="/ruang/hapus/{{ r.id }}">Hapus</a></td></tr>{% endfor %}
+        {% if not rows %}<tr><td colspan="5">Belum ada data.</td></tr>{% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

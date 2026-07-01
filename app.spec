@@ -1,12 +1,14 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import sys
+
 
 a = Analysis(
     ['app.py'],
     pathex=['.'],
     binaries=[],
     datas=[('templates', 'templates'), ('static', 'static'), ('scheduler.py', '.')],
-    hiddenimports=['openpyxl', 'scheduler'],
+    hiddenimports=['openpyxl', 'scheduler', 'reportlab', 'webview'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -19,9 +21,8 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.datas,
     [],
+    exclude_binaries=True,
     name='app',
     debug=False,
     bootloader_ignore_signals=False,
@@ -36,3 +37,22 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 )
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='app',
+)
+
+# Di macOS, bungkus jadi .app agar bisa dobel-klik seperti aplikasi biasa.
+if sys.platform == 'darwin':
+    app = BUNDLE(
+        coll,
+        name='Jadwal Farmasi.app',
+        icon=None,
+        bundle_identifier='id.farmasi.jadwal',
+    )

@@ -1,4 +1,6 @@
 flask
 pandas
 openpyxl
+reportlab
+pywebview
 pyinstaller
